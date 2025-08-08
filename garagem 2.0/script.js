@@ -29,7 +29,7 @@ const activityLog = document.getElementById('activity-log');
 
 // State management
 let doorOpen = false;
-let carPresent = false;
+let cars = [];
 let alarmActive = false;
 let emergencyMode = false;
 let temperature = 24;
@@ -79,35 +79,117 @@ function closeDoor() {
 
 // Car simulation functions
 simulateCarBtn.addEventListener('click', function() {
-    if (!carPresent) {
-        simulateCarArrival();
-    } else {
-        simulateCarDeparture();
-    }
+    addCar();
 });
 
-function simulateCarArrival() {
-    carPresent = true;
-    carStatus.textContent = 'Veículo detectado';
-    sensorIndicator.className = 'w-4 h-4 rounded-full bg-green-500 mr-2';
-    carImage.src = 'https://placehold.co/600x300/2c3e50/FFFFFF?text=Carro+Estacionado';
-    carImage.alt = 'Carro prateado moderno estacionado na garagem';
-    car.classList.remove('opacity-0');
-    car.classList.add('car-parked');
-    simulateCarBtn.textContent = 'Simular Saída';
-    logActivity('Veículo chegou', 'Sucesso');
+function addCar() {
+    const newCar = {
+        id: Date.now(),
+        name: `Carro ${cars.length + 1}`
+    };
+    cars.push(newCar);
+    updateCarList();
+    logActivity(`${newCar.name} chegou`, 'Sucesso');
 }
 
-function simulateCarDeparture() {
-    carPresent = false;
-    carStatus.textContent = 'Garagem vazia';
-    sensorIndicator.className = 'w-4 h-4 rounded-full bg-red-500 mr-2';
-    carImage.src = 'https://placehold.co/600x300/2c3e50/FFFFFF?text=Garagem+Vazia';
-    carImage.alt = 'Área de garagem vazia com piso de concreto e marcações de estacionamento';
-    car.classList.add('opacity-0');
-    car.classList.remove('car-parked');
-    simulateCarBtn.textContent = 'Simular Chegada';
-    logActivity('Veículo saiu', 'Sucesso');
+function removeCar(id) {
+    cars = cars.filter(car => car.id !== id);
+    updateCarList();
+    logActivity(`Carro removido`, 'Sucesso');
+}
+
+function updateCarList() {
+    const carList = document.getElementById('car-list');
+    const carStatus = document.getElementById('car-status');
+    const sensorIndicator = document.getElementById('sensor-indicator');
+    const carCountSpan = document.getElementById('car-count');
+
+    carList.innerHTML = '';
+
+    if (cars.length > 0) {
+        carStatus.textContent = `${cars.length} veículo${cars.length > 1 ? 's' : ''} detectado${cars.length > 1 ? 's' : ''}`;
+        sensorIndicator.className = 'w-4 h-4 rounded-full bg-green-500 mr-2';
+        carCountSpan.textContent = `Total: ${cars.length}`;
+
+        cars.forEach(car => {
+            const carDiv = document.createElement('div');
+            carDiv.className = 'bg-gray-200 p-2 rounded flex flex-col space-y-2';
+            carDiv.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <span>${car.name}</span>
+                    <button class="text-red-600 hover:text-red-800" data-id="${car.id}">Remover</button>
+                </div>
+                <div>
+                    <label class="block font-semibold mb-1">Revisões:</label>
+                    <div>
+                        <label><input type="checkbox" data-car-id="${car.id}" data-revision="Troca de óleo" ${car.revisions?.includes('Troca de óleo') ? 'checked' : ''}> Troca de óleo</label><br>
+                        <label><input type="checkbox" data-car-id="${car.id}" data-revision="Verificação de pneus" ${car.revisions?.includes('Verificação de pneus') ? 'checked' : ''}> Verificação de pneus</label><br>
+                        <label><input type="checkbox" data-car-id="${car.id}" data-revision="Inspeção de freios" ${car.revisions?.includes('Inspeção de freios') ? 'checked' : ''}> Inspeção de freios</label><br>
+                        <label><input type="checkbox" data-car-id="${car.id}" data-revision="Revisão geral" ${car.revisions?.includes('Revisão geral') ? 'checked' : ''}> Revisão geral</label>
+                    </div>
+                </div>
+            `;
+            carList.appendChild(carDiv);
+        });
+
+        // Hide the single car image since we have multiple cars now
+        const carImage = document.getElementById('car-image');
+        const car = document.getElementById('car');
+        carImage.style.display = 'none';
+        car.style.display = 'none';
+
+        // Add event listeners to remove buttons
+        carList.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const id = Number(e.target.getAttribute('data-id'));
+                removeCar(id);
+            });
+        });
+
+        // Add event listeners to revision checkboxes
+        carList.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', (e) => {
+                const carId = Number(e.target.getAttribute('data-car-id'));
+                const revision = e.target.getAttribute('data-revision');
+                const checked = e.target.checked;
+                updateCarRevision(carId, revision, checked);
+            });
+        });
+    } else {
+        carStatus.textContent = 'Garagem vazia';
+        sensorIndicator.className = 'w-4 h-4 rounded-full bg-red-500 mr-2';
+        carCountSpan.textContent = '';
+
+        // Show the single car image when no cars in list
+        const carImage = document.getElementById('car-image');
+        const car = document.getElementById('car');
+        carImage.style.display = '';
+        car.style.display = '';
+
+        carList.innerHTML = '';
+    }
+}
+
+function updateCarRevision(carId, revision, checked) {
+    const car = cars.find(c => c.id === carId);
+    if (!car) return;
+
+    if (!car.revisions) {
+        car.revisions = [];
+    }
+
+    if (checked) {
+        if (!car.revisions.includes(revision)) {
+            car.revisions.push(revision);
+            logActivity(`Revisão "${revision}" marcada para ${car.name}`, 'Sucesso');
+        }
+    } else {
+        const index = car.revisions.indexOf(revision);
+        if (index > -1) {
+            car.revisions.splice(index, 1);
+            logActivity(`Revisão "${revision}" desmarcada para ${car.name}`, 'Sucesso');
+        }
+    }
 }
 
 // Security system functions
