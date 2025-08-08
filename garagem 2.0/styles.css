@@ -1,0 +1,48 @@
+:root {
+    --garage-door-color: #2c3e50;
+    --sensor-active: #2ecc71;
+    --sensor-inactive: #e74c3c;
+    --control-primary: #3498db;
+}
+
+.garage-container {
+    perspective: 1000px;
+    transform-style: preserve-3d;
+}
+
+.garage-door {
+    transition: transform 5s ease-in-out;
+    transform-origin: top;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.door-open {
+    transform: rotateX(90deg);
+}
+
+.sensor-pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(46, 204, 113, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+}
+
+.car-animation {
+    transition: all 3s ease-in-out;
+}
+
+.car-parked {
+    transform: translateX(70%);
+}
+
+.security-alert {
+    animation: alert-pulse 1s infinite alternate;
+}
+
+@keyframes alert-pulse {
+    from { background-color: #fff; }
+    to { background-color: #ffebee; }
+}

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garagem Inteligente OPAA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center mb-2">Garagem Inteligente OPAA</h1>
+        <p class="text-center text-gray-600 mb-8">Sistema completo de monitoramento e controle</p>
+
+        <!-- Status Panel -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-semibold">Status da Garagem</h2>
+                <div class="flex items-center">
+                    <span class="mr-2">Modo:</span>
+                    <span id="mode-status" class="font-bold text-green-600">Normal</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Door Status -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-medium">Portão</h3>
+                        <span id="door-status" class="px-3 py-1 rounded-full bg-red-100 text-red-800">Fechado</span>
+                    </div>
+                    <div class="garage-container h-40 mb-4">
+                        <div class="garage-door bg-gray-800 h-full w-full relative">
+                            <div class="absolute bottom-0 left-0 right-0 h-4 bg-yellow-500"></div>
+                            <div class="absolute top-4 left-4 w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">
+                                <i class="fas fa-chevron-up text-white"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-center space-x-4">
+                        <button id="open-btn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Abrir</button>
+                        <button id="close-btn" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition" disabled>Fechar</button>
+                    </div>
+                </div>
+
+                <!-- Vehicle Detection -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="font-medium mb-2">Detecção de Veículo</h3>
+                    <div class="flex items-center mb-4">
+                        <div id="sensor-indicator" class="w-4 h-4 rounded-full bg-red-500 mr-2"></div>
+                        <span id="car-status">Garagem vazia</span>
+                    </div>
+                    <div class="relative h-40 overflow-hidden mb-4">
+                        <img id="car-image" src="https://placehold.co/600x300/2c3e50/FFFFFF?text=Garagem+Vazia" alt="Área de garagem vazia com piso de concreto e marcações de estacionamento" class="w-full h-full object-cover">
+                        <div id="car" class="car-animation absolute bottom-0 left-0 w-1/3 opacity-0">
+                            <img src="https://placehold.co/400x200/34495e/FFFFFF?text=Carro" alt="Carro prateado moderno estacionado na garagem" class="w-full">
+                        </div>
+                    </div>
+                    <div class="flex justify-center">
+                        <button id="simulate-car" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">Simular Chegada</button>
+                    </div>
+                </div>
+
+                <!-- Security System -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="font-medium mb-2">Sistema de Segurança</h3>
+                    <div class="space-y-4 mb-4">
+                        <div class="flex items-center">
+                            <div id="camera-status" class="w-4 h-4 rounded-full bg-green-500 mr-2"></div>
+                            <span>Câmeras: <span class="font-medium">Ativas</span></span>
+                        </div>
+                        <div class="flex items-center">
+                            <div id="alarm-status" class="w-4 h-4 rounded-full bg-gray-500 mr-2"></div>
+                            <span>Alarme: <span class="font-medium">Desligado</span></span>
+                        </div>
+                        <div class="flex items-center">
+                            <div id="motion-status" class="w-4 h-4 rounded-full bg-gray-500 mr-2"></div>
+                            <span>Movimento: <span class="font-medium">Nenhum</span></span>
+                        </div>
+                    </div>
+                    <div class="flex justify-center space-x-4">
+                        <button id="toggle-alarm" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">Ativar Alarme</button>
+                        <button id="emergency-btn" class="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition">Emergência</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Features -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- Climate Control -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-semibold mb-4">Controle Climático</h2>
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <span class="block text-gray-600">Temperatura Atual</span>
+                        <span id="temperature" class="text-3xl font-bold">24°C</span>
+                    </div>
+                    <div>
+                        <span class="block text-gray-600">Umidade</span>
+                        <span id="humidity" class="text-3xl font-bold">45%</span>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between">
+                    <button id="temp-down" class="p-2 bg-gray-200 rounded-full hover:bg-gray-300">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <div class="w-3/4 mx-4">
+                        <input id="temp-slider" type="range" min="10" max="35" value="24" class="w-full">
+                    </div>
+                    <button id="temp-up" class="p-2 bg-gray-200 rounded-full hover:bg-gray-300">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <div class="flex justify-center mt-4">
+                    <button id="climate-auto" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">Modo Automático</button>
+                </div>
+            </div>
+
+            <!-- Lighting Control -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-semibold mb-4">Iluminação</h2>
+                <div class="grid grid-cols-3 gap-4 mb-6">
+                    <div class="flex flex-col items-center">
+                        <div class="relative w-16 h-16 bg-gray-100 rounded-full mb-2 flex items-center justify-center">
+                            <div id="light-main" class="w-12 h-12 rounded-full bg-gray-300"></div>
+                            <div class="absolute inset-0 rounded-full border-2 border-gray-200 pointer-events-none"></div>
+                        </div>
+                        <span class="text-sm">Principal</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="relative w-16 h-16 bg-gray-100 rounded-full mb-2 flex items-center justify-center">
+                            <div id="light-work" class="w-12 h-12 rounded-full bg-gray-300"></div>
+                            <div class="absolute inset-0 rounded-full border-2 border-gray-200 pointer-events-none"></div>
+                        </div>
+                        <span class="text-sm">Trabalho</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="relative w-16 h-16 bg-gray-100 rounded-full mb-2 flex items-center justify-center">
+                            <div id="light-ambient" class="w-12 h-12 rounded-full bg-gray-300"></div>
+                            <div class="absolute inset-0 rounded-full border-2 border-gray-200 pointer-events-none"></div>
+                        </div>
+                        <span class="text-sm">Ambiente</span>
+                    </div>
+                </div>
+                <div class="flex justify-center space-x-4">
+                    <button id="light-all-on" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Todas Ligar</button>
+                    <button id="light-all-off" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">Todas Desligar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Log -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-semibold mb-4">Registro de Atividades</h2>
+            <div class="overflow-y-auto max-h-60">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data/Hora</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Evento</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activity-log" class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">10/07/2023 08:15</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Sistema iniciado</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">Sucesso</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
