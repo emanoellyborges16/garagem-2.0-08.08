@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garagem Inteligente 2.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center mb-2">Garagem Inteligente 2.0</h1>
+        <p class="text-center text-gray-600 mb-8">Sistema completo de garagem inteligente com previsão do tempo</p>
+
+        <!-- Previsão do Tempo -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">🌤️ Previsão do Tempo</h2>
+            <div id="weather-info" class="text-center">
+                <h3 id="city-name" class="text-lg font-medium text-gray-600">Carregando...</h3>
+                <div class="flex items-center justify-center mt-4">
+                    <img id="weather-icon" src="" alt="Ícone do tempo" class="w-16 h-16">
+                    <div class="ml-4 text-left">
+                        <span id="weather-temperature" class="text-3xl font-bold text-gray-800">--°C</span>
+                        <p id="weather-description" class="text-sm text-gray-600">--</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mt-4 text-sm">
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <i class="fas fa-tint text-blue-500 mr-2"></i>
+                        <span>Umidade: <span id="weather-humidity" class="font-semibold">--%</span></span>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <i class="fas fa-wind text-gray-500 mr-2"></i>
+                        <span>Vento: <span id="weather-wind" class="font-semibold">-- km/h</span></span>
+                    </div>
+                </div>
+                <button onclick="refreshWeather()" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                    <i class="fas fa-sync-alt mr-2"></i>Atualizar
+                </button>
+            </div>
+        </div>
+
+        <!-- Controle de Garagem com Porta 3D -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- Portão 3D -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-semibold mb-4">🚪 Controle de Portão 3D</h2>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-medium">Portão</h3>
+                    <span id="door-status" class="px-3 py-1 rounded-full bg-red-100 text-red-800">Fechado</span>
+                </div>
+                
+                <!-- Visualização 3D da Porta -->
+                <div class="garage-container h-40 mb-4">
+                    <div class="garage-door bg-gray-800 h-full w-full relative rounded-lg">
+                        <div class="absolute bottom-0 left-0 right-0 h-4 bg-yellow-500"></div>
+                        <div class="absolute top-4 left-4 w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">
+                            <i class="fas fa-chevron-up text-white"></i>
+                        </div>
+                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-red-500 rounded-full"></div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-center space-x-4">
+                    <button id="open-btn" onclick="openDoor()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                        <i class="fas fa-arrow-up mr-2"></i>Abrir
+                    </button>
+                    <button id="close-btn" onclick="closeDoor()" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition" disabled>
+                        <i class="fas fa-arrow-down mr-2"></i>Fechar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Veículos -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-semibold mb-4">🚗 Controle de Veículos</h2>
+                <div class="space-y-4">
+                    <input type="text" id="vehicle-model" placeholder="Modelo do veículo" class="w-full px-3 py-2 border rounded-lg">
+                    <input type="text" id="vehicle-plate" placeholder="Placa" class="w-full px-3 py-2 border rounded-lg">
+                    <button onclick="addVehicle()" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Adicionar Veículo</button>
+                </div>
+                <div id="vehicle-list" class="mt-4"></div>
+            </div>
+
+            <!-- Controle Climático -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-semibold mb-4">🌡️ Controle Climático</h2>
+                <div class="flex items-center justify-between mb-4">
+                    <span>Temperatura: <span id="temperature" class="text-3xl font-bold">24°C</span></span>
+                    <span>Umidade: <span id="humidity" class="text-3xl font-bold">45%</span></span>
+                </div>
+                <div class="flex justify-center space-x-4">
+                    <button id="temp-down" onclick="decreaseTemp()" class="px-4 py-2 bg-gray-200 rounded-full hover:bg-gray-300">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <input id="temp-slider" type="range" min="10" max="35" value="24" class="w-full mx-4" oninput="updateTemperature(this.value)">
+                    <button id="temp-up" onclick="increaseTemp()" class="px-4 py-2 bg-gray-200 rounded-full hover:bg-gray-300">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sistema de Alarme e Emergência -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- Sistema de Alarme -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-semibold mb-4">🚨 Sistema de Alarme</h2>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span>Status do Alarme</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="alarm-toggle" class="sr-only peer" onchange="toggleAlarm()">
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+                    <div id="alarm-status" class="text-center p-3 rounded-lg bg-green-100 text-green-800">
+                        <i class="fas fa-shield-alt mr-2"></i>Alarme Desativado
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="testAlarm()" class="px-3 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition">
+                            <i class="fas fa-bell mr-2"></i>Testar
+                        </button>
+                        <button onclick="resetAlarm()" class="px-3 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">
+                            <i class="fas fa-redo mr-2"></i>Resetar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sistema de Emergência -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-semibold mb-4">🆘 Sistema de Emergência</h2>
+                <div class="space-y-4">
+                    <button onclick="triggerEmergency()" class="w-full px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-lg font-bold">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>EMERGÊNCIA
+                    </button>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="callSecurity()" class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                            <i class="fas fa-phone mr-2"></i>Segurança
+                        </button>
+                        <button onclick="callPolice()" class="px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+                            <i class="fas fa-shield-alt mr-2"></i>Polícia
+                        </button>
+                    </div>
+                    <div id="emergency-contacts" class="text-sm text-gray-600">
+                        <p><strong>Contatos de Emergência:</strong></p>
+                        <p>Segurança: <span class="font-mono">190</span></p>
+                        <p>Ambulância: <span class="font-mono">192</span></p>
+                        <p>Bombeiros: <span class="font-mono">193</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controle de Veículos -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">🚗 Controle de Veículos</h2>
+            <div class="space-y-4">
+                <input type="text" id="vehicle-model" placeholder="Modelo do veículo" class="w-full px-3 py-2 border rounded-lg">
+                <input type="text" id="vehicle-plate" placeholder="Placa" class="w-full px-3 py-2 border rounded-lg">
+                <button onclick="addVehicle()" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Adicionar Veículo</button>
+            </div>
+            <div id="vehicle-list" class="mt-4"></div>
+        </div>
+
+        <!-- Registro de Atividades -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-semibold mb-4">📋 Registro de Atividades</h2>
+            <div id="activity-log" class="overflow-y-auto max-h-60">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data/Hora</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Evento</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activity-log-body" class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">10/07/2023 08:15</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Sistema iniciado</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600">Sucesso</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

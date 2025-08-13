@@ -1,0 +1,173 @@
+/* Estilos para o sistema de garagem inteligente */
+:root {
+    --garage-door-color: #2c3e50;
+    --sensor-active: #2ecc71;
+    --sensor-inactive: #e74c3c;
+    --control-primary: #3498db;
+}
+
+.garage-container {
+    perspective: 1000px;
+    transform-style: preserve-3d;
+}
+
+.garage-door {
+    transition: transform 5s ease-in-out;
+    transform-origin: top;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.door-open {
+    transform: rotateX(90deg);
+}
+
+.sensor-pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(46, 204, 113, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+}
+
+.car-animation {
+    transition: all 3s ease-in-out;
+}
+
+.car-parked {
+    transform: translateX(70%);
+}
+
+.security-alert {
+    animation: alert-pulse 1s infinite alternate;
+}
+
+@keyframes alert-pulse {
+    from { background-color: #fff; }
+    to { background-color: #ffebee; }
+}
+
+/* Estilos para previsão do tempo */
+.weather-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.weather-icon {
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    .grid-cols-3 {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Animações de hover */
+button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Estilos para veículos */
+.vehicle-item {
+    transition: all 0.3s ease;
+}
+
+.vehicle-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Estilos para logs */
+.log-entry {
+    border-left: 4px solid #10b981;
+    background: #f9fafb;
+}
+
+.log-entry.error {
+    border-left-color: #ef4444;
+}
+
+/* Estilos para o sistema de alarme */
+.alarm-active {
+    background: linear-gradient(45deg, #ff0000, #ff6600);
+    animation: alarmBlink 1s infinite;
+}
+
+@keyframes alarmBlink {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.emergency-button {
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+    transition: all 0.3s ease;
+}
+
+.emergency-button:hover {
+    box-shadow: 0 0 30px rgba(239, 68, 68, 0.8);
+    transform: scale(1.05);
+}
+
+/* Estilos para gerenciamento de carros */
+.fleet-car-item {
+    transition: all 0.3s ease;
+}
+
+.fleet-car-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.car-status-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Modal de emergência */
+.emergency-modal {
+    backdrop-filter: blur(5px);
+}
+
+.emergency-modal-content {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Notificações */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    max-width: 300px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .emergency-button {
+        font-size: 1rem;
+    }
+    
+    .fleet-car-item {
+        padding: 0.5rem;
+    }
+}
